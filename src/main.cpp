@@ -71,9 +71,10 @@ public:
 
         }
         ready = std::vector<std::mutex>(nThreads);
+        frames = std::vector<cv::Mat>(nThreads);
         onThread =0;
     };
-    void dispatchFrame(cv::Mat frame, std::string region, bool writeJson)
+    void dispatchFrame(std::string region, bool writeJson)
     {
         printf("Dispatching\n");
         Alpr * chosen = alprs[onThread];
@@ -86,7 +87,7 @@ public:
             printf("Cloned frame\n");
             std::unique_lock<std::mutex>(ready[onThread]);
             printf("Reacquired lock\n");
-            detectandshow(chosen, frame, "", writeJson);
+            detectandshow(chosen, frames[onThread], "", writeJson);
             printf("Detected\n");
         });
         runner.detach();
@@ -94,9 +95,14 @@ public:
         onThread = (onThread + 1)%alprs.size();
 
     };
+    void read(cv::VideoCapture cap){
+ std::unique_lock<std::mutex>(ready[onThread]);
+ cap.read(frames[onThread]);
+    }
     int onThread;
     std::vector<Alpr*> alprs;
     std::vector<std::mutex> ready;
+    std::vector<cv::Mat> frames;
 };
 int main( int argc, const char** argv )
 {
@@ -271,19 +277,18 @@ int main( int argc, const char** argv )
                 cap.open(filename);
                 cap.set(CV_CAP_PROP_POS_MSEC, seektoms);
 
-                while (cap.read(frame))
+                while (pool.read(cap)))
                 {
-                    if (SAVE_LAST_VIDEO_STILL)
+                    /*if (SAVE_LAST_VIDEO_STILL)
                     {
                         cv::imwrite(LAST_VIDEO_STILL_LOCATION, frame);
-                    }
+                    }*/
                     if (!outputJson)
                         std::cout << "Frame: " << framenum << std::endl;
 
                     if (framenum == 0)
-                        motiondetector.ResetMotionDetection(&frame);
-                    cv::Mat cFrame = frame.clone();
-                    pool.dispatchFrame(cFrame,"",outputJson);
+                        motiondetector.ResetMotionDetection(pool.frames[0]);
+                    pool.dispatchFrame("",outputJson);
                     //create a 1ms delay
                     sleep_ms(1);
                     framenum++;
