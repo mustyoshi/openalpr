@@ -75,18 +75,23 @@ public:
     };
     void dispatchFrame(cv::Mat frame, std::string region, bool writeJson)
     {
-
+        printf("Dispatching\n");
         Alpr * chosen = alprs[onThread];
     {
         std::unique_lock<std::mutex>(ready[onThread]);
     }
+    printf("Aqcuired lock\n");
         std::thread runner([&]()
         {
             cv::Mat lFrame = frame.clone();
+            printf("Cloned frame\n");
             std::unique_lock<std::mutex>(ready[onThread]);
+            printf("Reacquired lock\n");
             detectandshow(chosen, lFrame, "", writeJson);
+            printf("Detected\n");
         });
         runner.detach();
+        printf("Detached\n");
         onThread = (onThread + 1)%alprs.size();
 
     };
