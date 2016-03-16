@@ -84,6 +84,7 @@ public:
     printf("Aqcuired lock %d\n",onThread);
         std::thread runner([&]()
         {
+            sleep_ms(1);
             printf("Cloned frame\n");
             std::unique_lock<std::mutex>(ready[onThread]);
             printf("Reacquired lock\n");
@@ -93,7 +94,7 @@ public:
         runner.detach();
         printf("Detached\n");
         onThread = (onThread + 1)%alprs.size();
-
+sleep_ms(1);
     };
     bool read(cv::VideoCapture cap){
  std::unique_lock<std::mutex>(ready[onThread]);
@@ -291,7 +292,7 @@ int main( int argc, const char** argv )
                         motiondetector.ResetMotionDetection(&(pool.frames[0]));
                     pool.dispatchFrame("",outputJson);
                     //create a 1ms delay
-                    sleep_ms(1);
+
                     framenum++;
                 }
             }
