@@ -277,7 +277,7 @@ int main( int argc, const char** argv )
                 cap.open(filename);
                 cap.set(CV_CAP_PROP_POS_MSEC, seektoms);
 
-                while (pool.read(cap)))
+                while (pool.read(cap))
                 {
                     /*if (SAVE_LAST_VIDEO_STILL)
                     {
