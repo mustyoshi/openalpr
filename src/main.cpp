@@ -78,11 +78,11 @@ public:
 
         Alpr * chosen = alprs[onThread];
     {
-        std::unique_lock(ready[onThread]);
+        std::unique_lock<std::mutex>(ready[onThread]);
     }
-        thread runner([&]()
+        std::thread runner([&]()
         {
-            std::unique_lock(ready[onThread]);
+            std::unique_lock<std::mutex>(ready[onThread]);
             detectandshow(chosen, frame, "", outputJson);
         });
         onThread = (onThread + 1)%alprs.size();
