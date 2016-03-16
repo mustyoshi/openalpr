@@ -82,9 +82,11 @@ public:
     }
         std::thread runner([&]()
         {
+            cv::Mat lFrame = frame.clone();
             std::unique_lock<std::mutex>(ready[onThread]);
-            detectandshow(chosen, frame, "", writeJson);
+            detectandshow(chosen, lFrame, "", writeJson);
         });
+        runner.detach();
         onThread = (onThread + 1)%alprs.size();
 
     };
