@@ -83,7 +83,7 @@ public:
         std::thread runner([&]()
         {
             std::unique_lock<std::mutex>(ready[onThread]);
-            detectandshow(chosen, frame, "", outputJson);
+            detectandshow(chosen, frame, "", writeJson);
         });
         onThread = (onThread + 1)%alprs.size();
 
@@ -276,7 +276,7 @@ int main( int argc, const char** argv )
 
                     if (framenum == 0)
                         motiondetector.ResetMotionDetection(&frame);
-                    pool->dispatchFrame(frame,"",outputJson);
+                    pool.dispatchFrame(frame,"",outputJson);
                     //create a 1ms delay
                     sleep_ms(1);
                     framenum++;
