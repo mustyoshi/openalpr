@@ -61,7 +61,7 @@ class ThreadPool
 public:
     ThreadPool(int nThreads,std::string country,std::string configFile,bool detectRegion,std::string defaultRegion)
     {
-        for(int i=1; i<nThreads; i++)
+        for(int i=0; i<nThreads; i++)
         {
             Alpr * alp = new Alpr(country,configFile);
             alp->setTopN(10);
@@ -81,14 +81,14 @@ public:
     {
         std::unique_lock<std::mutex>(ready[onThread]);
     }
-    printf("Aqcuired lock\n");
+    printf("Aqcuired lock %d\n",onThread);
         std::thread runner([&]()
         {
             printf("Cloned frame\n");
             std::unique_lock<std::mutex>(ready[onThread]);
             printf("Reacquired lock\n");
             detectandshow(chosen, frames[onThread], "", writeJson);
-            printf("Detected\n");
+            printf("Detected %d\n",onThread);
         });
         runner.detach();
         printf("Detached\n");
@@ -97,6 +97,7 @@ public:
     };
     bool read(cv::VideoCapture cap){
  std::unique_lock<std::mutex>(ready[onThread]);
+ printf("Locked to read %d\n",onThread);
  return cap.read(frames[onThread]);
     };
     int onThread;
