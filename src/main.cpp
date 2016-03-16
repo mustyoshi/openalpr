@@ -83,11 +83,10 @@ public:
     printf("Aqcuired lock\n");
         std::thread runner([&]()
         {
-            cv::Mat lFrame = frame.clone();
             printf("Cloned frame\n");
             std::unique_lock<std::mutex>(ready[onThread]);
             printf("Reacquired lock\n");
-            detectandshow(chosen, lFrame, "", writeJson);
+            detectandshow(chosen, frame, "", writeJson);
             printf("Detected\n");
         });
         runner.detach();
@@ -283,7 +282,8 @@ int main( int argc, const char** argv )
 
                     if (framenum == 0)
                         motiondetector.ResetMotionDetection(&frame);
-                    pool.dispatchFrame(frame,"",outputJson);
+                    cv::Mat cFrame = frame.clone();
+                    pool.dispatchFrame(cFrame,"",outputJson);
                     //create a 1ms delay
                     sleep_ms(1);
                     framenum++;
