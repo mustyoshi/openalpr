@@ -287,7 +287,7 @@ int main( int argc, const char** argv )
                         std::cout << "Frame: " << framenum << std::endl;
 
                     if (framenum == 0)
-                        motiondetector.ResetMotionDetection(pool.frames[0]);
+                        motiondetector.ResetMotionDetection(&(pool.frames[0]));
                     pool.dispatchFrame("",outputJson);
                     //create a 1ms delay
                     sleep_ms(1);
