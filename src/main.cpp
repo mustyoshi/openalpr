@@ -95,10 +95,10 @@ public:
         onThread = (onThread + 1)%alprs.size();
 
     };
-    void read(cv::VideoCapture cap){
+    bool read(cv::VideoCapture cap){
  std::unique_lock<std::mutex>(ready[onThread]);
- cap.read(frames[onThread]);
-    }
+ return cap.read(frames[onThread]);
+    };
     int onThread;
     std::vector<Alpr*> alprs;
     std::vector<std::mutex> ready;
